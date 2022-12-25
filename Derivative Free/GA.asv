@@ -1,0 +1,55 @@
+
+function GA()
+generation_n = 50; 
+
+cities = 4;
+distance = [1 2 1 3; 2 4 3 1; 1 4 5 3; 4 6 1 2];
+
+population = 10;
+popu = randperm(cities);
+%Create population
+for i=1:population
+    temp = randperm(cities);
+    popu = [popu;temp];
+end
+
+xover_rate = 0.75;
+mutate_rate = 0.01;
+
+bit_n = 16;
+
+var_n = 2;
+range = [-1 1];
+popu = rand(population, bit_n*var_n)>0.5;
+
+disp('Population');
+disp(popu);
+
+lower = zeros(generation_n, 1);
+upper = zeros(generation_n, 1);
+average = zeros(generation_n, 1);
+
+for i=1:generation_n
+    fun_value = evalpopu(popu, bit_n, range);%, obj_fun);
+    
+    lower(i) = min(fun_value);
+    upper(i) = max(fun_value);
+    average(i) = mean(fun_value);
+    
+    plot(i, lower(i), 'color', 'r', 'marker', '*');
+    hold on;
+    plot(i, upper(i), 'color', 'g', 'marker', '*');
+    hold on;
+    plot(i, average(i), 'color', 'b', 'marker', '*');
+    pause(0.01);
+    
+    popu = nextpopu(popu, fun_value, xover_rate, mutate_rate);
+end
+
+[popu_s, string_length] = size(popu);
+num1 = bit2num(popu(1, 1:bit_n), range);
+num2 = bit2num(popu(1, bit_n+1:string_length), range);
+
+disp('Optimal level set: ');disp(vpa(obj_fun(num1, num2),2));
+
+end
